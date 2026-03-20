@@ -438,10 +438,17 @@ with st.sidebar:
     if st.button("🚀 Launch 3D Modeling"):
         import subprocess
         import sys
+        import os
         try:
             # Launch in background so it doesn't block Streamlit
-            subprocess.Popen([sys.executable, "explore_network.py"])
-            st.success("3D Processing running! Tunnel ready locally at http://127.0.0.1:8050")
+            log_file = open("network_explorer.log", "w")
+            # Use creationflags on Windows to fully detach, or just redirect streams
+            kwargs = {}
+            if os.name == 'nt':
+                kwargs['creationflags'] = subprocess.CREATE_NEW_PROCESS_GROUP
+            subprocess.Popen([sys.executable, "explore_network.py"], stdout=log_file, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, **kwargs)
+            st.success("3D Processing started! ⏳ Please wait ~15-20 seconds for the server to load before clicking the link: http://127.0.0.1:8050")
+            st.info("If the site says 'refused to connect', the data is still loading. Please refresh the page in a few seconds.")
         except Exception as e:
             st.error(f"Failed to launch module: {e}")
             
