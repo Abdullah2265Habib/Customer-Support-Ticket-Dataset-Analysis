@@ -1,4 +1,6 @@
 import streamlit as st
+import time
+import matplotlib.pyplot as plt
 import os
 import re
 import numpy as np
@@ -266,24 +268,25 @@ st.markdown("""
     
     /* App background */
     [data-testid="stAppViewContainer"] {
-        background-color: #0b1a2e;
-        color: #dbeafe;
+        background-color: #10213a;
+        color: #ffffff;
     }
     
     /* Sidebar background */
     [data-testid="stSidebar"] {
-        background-color: #11253d;
-        color: #dbeafe;
-        border-right: 1px solid #1e3a5f;
+        background-color: #132c4a;
+        color: #ffffff;
+        border-right: none;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.2);
     }
     
     /* Sidebar Text / Labels */
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] div {
-        color: #93c5fd !important;
+        color: #dbeafe !important;
     }
     
     [data-testid="stSidebar"] h3 {
-        color: #f0fdf4 !important;
+        color: #ffffff !important;
         font-weight: 600;
         text-transform: uppercase;
         font-size: 0.9rem;
@@ -293,44 +296,55 @@ st.markdown("""
     /* Main headings */
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Inter', sans-serif;
-        color: #f8fafc;
+        color: #ffffff;
         font-weight: 500;
     }
 
     .main-title {
-        font-size: 2.2rem;
-        font-weight: 300;
+        font-size: 2rem;
+        font-weight: 400;
         color: #ffffff;
         margin-bottom: 0.2rem;
-        border-bottom: 2px solid #1e3a5f;
+        border-bottom: 1px solid #1e3a5f;
         padding-bottom: 12px;
     }
 
     .sub-title {
-        font-size: 1.05rem;
+        font-size: 1rem;
         color: #7dd3fc;
         margin-bottom: 2rem;
-        font-weight: 400;
+        font-weight: 300;
     }
 
     /* Dashboard Cards */
     .st-card {
-        background: #153152;
-        border: 1px solid #234773;
+        background: #132c4a;
+        border: none;
         border-radius: 4px;
         padding: 22px;
         margin-bottom: 22px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-        transition: border 0.2s ease, transform 0.2s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+        transition: transform 0.2s ease;
     }
     
     .st-card:hover {
-        border-color: #38bdf8;
         transform: translateY(-2px);
     }
     
     .badge-primary {
-        background-color: #0284c7;
+        background-color: #2cc1cc;
+        color: #0b1a2e;
+        padding: 4px 10px;
+        border-radius: 3px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: inline-block;
+        margin-bottom: 12px;
+    }
+
+    .badge-secondary {
+        background-color: #f08155;
         color: #ffffff;
         padding: 4px 10px;
         border-radius: 3px;
@@ -338,37 +352,23 @@ st.markdown("""
         font-weight: 600;
         text-transform: uppercase;
         display: inline-block;
-        margin-bottom: 12px;
-        letter-spacing: 0.02em;
-    }
-
-    .badge-secondary {
-        background-color: #0c4a6e;
-        color: #38bdf8;
-        padding: 4px 10px;
-        border-radius: 3px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        display: inline-block;
         margin-right: 10px;
-        border: 1px solid #0284c7;
     }
     
     .resolution-box {
-        background: #0f2742;
-        border-left: 3px solid #f59e0b;
+        background: #0d1e33;
+        border-left: 3px solid #2cc1cc;
         padding: 12px 16px;
         border-radius: 2px;
         margin-top: 15px;
-        color: #bae6fd;
+        color: #e0f2fe;
         font-weight: 400;
         font-size: 0.9rem;
     }
     
     .score-bar-container {
         width: 100%;
-        background-color: #1e3a5f;
+        background-color: #0d1e33;
         border-radius: 2px;
         margin-top: 10px;
         height: 6px;
@@ -377,12 +377,12 @@ st.markdown("""
     
     .score-bar {
         height: 6px;
-        background-color: #2dd4bf;
+        background-color: #2cc1cc;
     }
 
     /* Target inputs and sliders */
     .stTextArea textarea {
-        background-color: #0f2742;
+        background-color: #0d1e33;
         color: #ffffff;
         border: 1px solid #1e3a5f;
         border-radius: 4px;
@@ -392,30 +392,29 @@ st.markdown("""
     }
     
     .stTextArea textarea:focus {
-        border-color: #38bdf8;
-        box-shadow: 0 0 0 1px #38bdf8;
+        border-color: #2cc1cc;
+        box-shadow: 0 0 0 1px #2cc1cc;
     }
 
     /* Target buttons */
     .stButton button {
-        background-color: #0284c7;
+        background-color: #1b75ff;
         color: #ffffff;
-        border: 1px solid #38bdf8;
+        border: none;
         padding: 12px 24px;
         border-radius: 4px;
         font-family: 'Inter', sans-serif;
         font-size: 0.95rem;
-        font-weight: 600;
+        font-weight: 500;
         transition: all 0.2s ease;
         width: 100%;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     }
     
     .stButton button:hover {
-        background-color: #0369a1;
-        color: #ffffff;
-        border-color: #7dd3fc;
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+        background-color: #2cc1cc;
+        color: #0b1a2e;
+        box-shadow: 0 4px 12px rgba(44, 193, 204, 0.4);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -447,96 +446,235 @@ with st.sidebar:
             st.error(f"Failed to launch module: {e}")
             
     st.markdown("---")
+
+    st.markdown("---")
+    page = st.radio("Navigation", ["🔍 Search Protocol", "📊 System Evaluation"])
+
     st.markdown("### ℹ️ Protocol Status")
     st.info("System Online. Ready for Hybrid TF-IDF and Neural GloVe pipeline mapping.")
 
-st.markdown("<h3 style='font-size:1.1rem; color:#bae6fd; margin-bottom:-0.5rem;'>Input Customer Data Query Protocol:</h3>", unsafe_allow_html=True)
-query = st.text_area("Ticket Extract", value="I need help with my billing and money matters.", height=120, label_visibility="collapsed")
+if page == "🔍 Search Protocol":
+    st.markdown("<h3 style='font-size:1.1rem; color:#bae6fd; margin-bottom:-0.5rem;'>Input Customer Data Query Protocol:</h3>", unsafe_allow_html=True)
 
-if st.button("Initialize Analytical Search"):
-    if query:
-        with st.spinner("Processing semantics engine mapping..."):
-            # Prediction setup
-            results = hybrid_search(
-                query=query, df=df, tfidf_vec=tfidf_vectorizer, tfidf_corpus=tfidf_sparse, 
-                glove_corpus=glove_matrix, emb_layer=embedding_layer, w2idx=word2idx, unk_idx=UNK_IDX, 
-                alpha=alpha, top_k=3
-            )
+    query = st.text_area("Ticket Extract", value="I need help with my billing and money matters.", height=120, label_visibility="collapsed")
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        # Predicted Ticket Type (from highest scored ticket)
-        predicted_type = results.iloc[0]['Ticket Type']
-        
-        st.markdown(f"""
-        <div style="background-color: #11253d; border: 1px solid #10b981; border-left: 4px solid #10b981; padding: 18px 24px; border-radius: 4px; margin-bottom: 24px; display: inline-block;">
-            <div style="color: #94a3b8; font-weight: 500; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Predicted Protocol</div>
-            <div style="color: #34d399; font-weight: 600; font-size: 1.4rem;">{predicted_type}</div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Display side-by-side comparison (TF-IDF vs GloVe based on alpha)
-        col1, col2 = st.columns([1.2, 1])
-        
-        with col1:
-            st.markdown(f"<h3 style='color:#e0f2fe; font-size:1.1rem; margin-bottom:1.2rem; border-bottom: 1px solid #1e3a5f; padding-bottom: 8px;'>Hybrid Fusion Rank (α = {alpha})</h3>", unsafe_allow_html=True)
-            for i, row in results.iterrows():
-                delay = 0.1 * i
-                st.markdown(f"""
-                <div class="st-card" style="animation-delay: {delay}s;">
-                    <div class="badge-primary">{row['Ticket Type']}</div>
-                    <div class="badge-secondary">{row['Ticket Priority']} Priority</div>
-                    <h4 style="margin-top:10px; color:#ffffff; font-weight: 500; font-size: 1.1rem;">{row['Ticket Subject']}</h4>
-                    <p style="color:#bfdbfe; font-size:0.95rem; line-height:1.6; font-weight: 300;">"{row['Ticket Description']}"</p>
-                    <div class="resolution-box">
-                        <strong style="color: #38bdf8;">Resolution Log:</strong> {row['Resolution']}
-                    </div>
-                    <div style="margin-top:20px; font-size: 0.85rem; color: #94a3b8; display: flex; justify-content: space-between; font-weight: 500;">
-                        <span>TF·IDF: {row['tfidf_score']:.3f}</span>
-                        <span>GloVe: {row['glove_score']:.3f}</span>
-                        <span style="color:#34d399; font-weight:700;">Final Score (HSRIS): {row['final_score']:.3f}</span>
-                    </div>
-                    <div class="score-bar-container">
-                        <div class="score-bar" style="width: {row['final_score']*100}%;"></div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-        with col2:
-            st.markdown("<h3 style='color:#e0f2fe; font-size:1.1rem; margin-bottom:1.2rem; border-bottom: 1px solid #1e3a5f; padding-bottom: 8px;'>Component Pipeline Breakdown</h3>", unsafe_allow_html=True)
-            
-            # Pure TF-IDF top result
-            pure_tfidf_results = hybrid_search(
-                query=query, df=df, tfidf_vec=tfidf_vectorizer, tfidf_corpus=tfidf_sparse, 
-                glove_corpus=glove_matrix, emb_layer=embedding_layer, w2idx=word2idx, unk_idx=UNK_IDX, 
-                alpha=1.0, top_k=1
-            )
-            
-            st.markdown("<h4 style='color:#7dd3fc; font-size:0.9rem; text-transform:uppercase; letter-spacing: 0.05em;'>Tensor Frequency Model (TF-IDF)</h4>", unsafe_allow_html=True)
-            for i, row in pure_tfidf_results.iterrows():
-                st.markdown(f"""
-                <div class="st-card" style="box-shadow: none; border: 1px solid #fbbf24; background-color: #0f2742; padding: 18px;">
-                    <div class="badge-secondary" style="border: 1px solid #fbbf24; color:#fbbf24; background: #451a03;">Raw Score: {row['tfidf_score']:.3f}</div>
-                    <p style="font-size:0.9rem; margin-top:12px; font-weight: 300; color: #bae6fd; line-height: 1.5;">{row['Ticket Description']}</p>
-                </div>
-                """, unsafe_allow_html=True)
-            
+    if st.button("Initialize Analytical Search"):
+        if query:
+            with st.spinner("Processing semantics engine mapping..."):
+                # Prediction setup
+                results = hybrid_search(
+                    query=query, df=df, tfidf_vec=tfidf_vectorizer, tfidf_corpus=tfidf_sparse, 
+                    glove_corpus=glove_matrix, emb_layer=embedding_layer, w2idx=word2idx, unk_idx=UNK_IDX, 
+                    alpha=alpha, top_k=3
+                )
+
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # Pure GloVe top result
-            pure_glove_results = hybrid_search(
-                query=query, df=df, tfidf_vec=tfidf_vectorizer, tfidf_corpus=tfidf_sparse, 
-                glove_corpus=glove_matrix, emb_layer=embedding_layer, w2idx=word2idx, unk_idx=UNK_IDX, 
-                alpha=0.0, top_k=1
-            )
+            # Predicted Ticket Type (from highest scored ticket)
+            predicted_type = results.iloc[0]['Ticket Type']
             
-            st.markdown("<h4 style='color:#7dd3fc; font-size:0.9rem; text-transform:uppercase; letter-spacing: 0.05em;'>Neural GloVe Semantic Model</h4>", unsafe_allow_html=True)
-            for i, row in pure_glove_results.iterrows():
-                st.markdown(f"""
-                <div class="st-card" style="box-shadow: none; border: 1px solid #2dd4bf; background-color: #0f2742; padding: 18px;">
-                    <div class="badge-secondary" style="border: 1px solid #2dd4bf; color:#2dd4bf; background: #042f2e;">Raw Score: {row['glove_score']:.3f}</div>
-                    <p style="font-size:0.9rem; margin-top:12px; font-weight: 300; color: #bae6fd; line-height: 1.5;">{row['Ticket Description']}</p>
-                </div>
-                """, unsafe_allow_html=True)
-    else:
-        st.warning("Please enter a ticket query to begin mapping.")
+            st.markdown(f"""
+            <div style="background-color: #11253d; border: 1px solid #10b981; border-left: 4px solid #10b981; padding: 18px 24px; border-radius: 4px; margin-bottom: 24px; display: inline-block;">
+                <div style="color: #94a3b8; font-weight: 500; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Predicted Protocol</div>
+                <div style="color: #34d399; font-weight: 600; font-size: 1.4rem;">{predicted_type}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Display side-by-side comparison (TF-IDF vs GloVe based on alpha)
+            col1, col2 = st.columns([1.2, 1])
+            
+            with col1:
+                st.markdown(f"<h3 style='color:#e0f2fe; font-size:1.1rem; margin-bottom:1.2rem; border-bottom: 1px solid #1e3a5f; padding-bottom: 8px;'>Hybrid Fusion Rank (α = {alpha})</h3>", unsafe_allow_html=True)
+                for i, row in results.iterrows():
+                    delay = 0.1 * i
+                    st.markdown(f"""
+                    <div class="st-card" style="animation-delay: {delay}s;">
+                        <div class="badge-primary">{row['Ticket Type']}</div>
+                        <div class="badge-secondary">{row['Ticket Priority']} Priority</div>
+                        <h4 style="margin-top:10px; color:#ffffff; font-weight: 500; font-size: 1.1rem;">{row['Ticket Subject']}</h4>
+                        <p style="color:#bfdbfe; font-size:0.95rem; line-height:1.6; font-weight: 300;">"{row['Ticket Description']}"</p>
+                        <div class="resolution-box">
+                            <strong style="color: #38bdf8;">Resolution Log:</strong> {row['Resolution']}
+                        </div>
+                        <div style="margin-top:20px; font-size: 0.85rem; color: #94a3b8; display: flex; justify-content: space-between; font-weight: 500;">
+                            <span>TF·IDF: {row['tfidf_score']:.3f}</span>
+                            <span>GloVe: {row['glove_score']:.3f}</span>
+                            <span style="color:#34d399; font-weight:700;">Final Score (HSRIS): {row['final_score']:.3f}</span>
+                        </div>
+                        <div class="score-bar-container">
+                            <div class="score-bar" style="width: {row['final_score']*100}%;"></div>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+            with col2:
+                st.markdown("<h3 style='color:#e0f2fe; font-size:1.1rem; margin-bottom:1.2rem; border-bottom: 1px solid #1e3a5f; padding-bottom: 8px;'>Component Pipeline Breakdown</h3>", unsafe_allow_html=True)
+                
+                # Pure TF-IDF top result
+                pure_tfidf_results = hybrid_search(
+                    query=query, df=df, tfidf_vec=tfidf_vectorizer, tfidf_corpus=tfidf_sparse, 
+                    glove_corpus=glove_matrix, emb_layer=embedding_layer, w2idx=word2idx, unk_idx=UNK_IDX, 
+                    alpha=1.0, top_k=1
+                )
+                
+                st.markdown("<h4 style='color:#7dd3fc; font-size:0.9rem; text-transform:uppercase; letter-spacing: 0.05em;'>Tensor Frequency Model (TF-IDF)</h4>", unsafe_allow_html=True)
+                for i, row in pure_tfidf_results.iterrows():
+                    st.markdown(f"""
+                    <div class="st-card" style="box-shadow: none; border: 1px solid #fbbf24; background-color: #0f2742; padding: 18px;">
+                        <div class="badge-secondary" style="border: 1px solid #fbbf24; color:#fbbf24; background: #451a03;">Raw Score: {row['tfidf_score']:.3f}</div>
+                        <p style="font-size:0.9rem; margin-top:12px; font-weight: 300; color: #bae6fd; line-height: 1.5;">{row['Ticket Description']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("<br>", unsafe_allow_html=True)
+                
+                # Pure GloVe top result
+                pure_glove_results = hybrid_search(
+                    query=query, df=df, tfidf_vec=tfidf_vectorizer, tfidf_corpus=tfidf_sparse, 
+                    glove_corpus=glove_matrix, emb_layer=embedding_layer, w2idx=word2idx, unk_idx=UNK_IDX, 
+                    alpha=0.0, top_k=1
+                )
+                
+                st.markdown("<h4 style='color:#7dd3fc; font-size:0.9rem; text-transform:uppercase; letter-spacing: 0.05em;'>Neural GloVe Semantic Model</h4>", unsafe_allow_html=True)
+                for i, row in pure_glove_results.iterrows():
+                    st.markdown(f"""
+                    <div class="st-card" style="box-shadow: none; border: 1px solid #2dd4bf; background-color: #0f2742; padding: 18px;">
+                        <div class="badge-secondary" style="border: 1px solid #2dd4bf; color:#2dd4bf; background: #042f2e;">Raw Score: {row['glove_score']:.3f}</div>
+                        <p style="font-size:0.9rem; margin-top:12px; font-weight: 300; color: #bae6fd; line-height: 1.5;">{row['Ticket Description']}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+        else:
+            st.warning("Please enter a ticket query to begin mapping.")
+
+
+elif page == "📊 System Evaluation":
+    st.markdown("<h3 style='font-size:1.1rem; color:#bae6fd; margin-bottom:1rem;'>System Performance & Evaluation Metrics</h3>", unsafe_allow_html=True)
+    
+    tab1, tab2, tab3 = st.tabs(["⚡ Execution Time (GPU)", "🎯 Precision@5", "🥇 Qualitative: GloVe vs TF-IDF"])
+    
+    with tab1:
+        st.markdown("#### Execution Time vs Query Batch Size")
+        st.markdown("Measures the system\'s hybrid retrieval speed under different batch sizes.")
+        if st.button("Run Execution Time Benchmark"):
+            with st.spinner("Running Benchmark..."):
+                batch_sizes = [1, 8, 16, 32, 64, 128, 256]
+                exec_times = []
+                descriptions = df['Ticket Description'].tolist()
+                
+                corpus_dense_n = tfidf_sparse.to_dense().to(device)
+                corpus_dense_n = corpus_dense_n / (corpus_dense_n.norm(dim=1, keepdim=True) + 1e-9)
+                glove_n = glove_matrix.to(device)
+                glove_n = glove_n / (glove_n.norm(dim=1, keepdim=True) + 1e-9)
+                
+                for b in batch_sizes:
+                    if b > len(descriptions): b = len(descriptions)
+                    b_queries = descriptions[:b]
+                    q_tfidf_list = []
+                    q_glove_list = []
+                    for q in b_queries:
+                        q_tfidf_list.append(tfidf_vectorizer.transform_single(q))
+                        q_glove_list.append(text_to_glove_vector(q, tfidf_vectorizer, embedding_layer, word2idx, UNK_IDX))
+                    
+                    q_tfidf_tensor = torch.stack(q_tfidf_list).to(device)
+                    q_glove_tensor = torch.stack(q_glove_list).to(device)
+                    
+                    start = time.time()
+                    with torch.no_grad():
+                        q_n_t = q_tfidf_tensor / (q_tfidf_tensor.norm(dim=1, keepdim=True) + 1e-9)
+                        q_n_g = q_glove_tensor / (q_glove_tensor.norm(dim=1, keepdim=True) + 1e-9)
+                        _ = torch.matmul(q_n_t, corpus_dense_n.T)
+                        _ = torch.matmul(q_n_g, glove_n.T)
+                    if torch.cuda.is_available(): torch.cuda.synchronize()
+                    end = time.time()
+                    
+                    exec_times.append(end - start)
+                
+                from scipy.interpolate import make_interp_spline
+                import numpy as np
+                
+                fig, ax = plt.subplots(figsize=(8, 4))
+                
+                # Smooth curve interpolation
+                if len(batch_sizes) > 3:
+                    spline = make_interp_spline(batch_sizes, exec_times, k=3)
+                    x_smooth = np.linspace(min(batch_sizes), max(batch_sizes), 300)
+                    y_smooth = spline(x_smooth)
+                else:
+                    x_smooth = batch_sizes
+                    y_smooth = exec_times
+                    
+                # Plot the smooth line and fill
+                ax.plot(x_smooth, y_smooth, color='#7c3aed', linewidth=2.5)
+                ax.fill_between(x_smooth, y_smooth, alpha=0.15, color='#7c3aed')
+                ax.plot(batch_sizes, exec_times, 'o', color='#7c3aed', markersize=5) # subtle data points
+
+                ax.set_title("Hybrid Search Execution Time", color='#f8fafc', fontsize=14, pad=12)
+                ax.set_xlabel("Batch Size", color='#bae6fd', fontsize=11)
+                ax.set_ylabel("Execution Time (seconds)", color='#bae6fd', fontsize=11)
+                
+                # Minimalist axes like the provided graph
+                ax.grid(axis='y', alpha=0.2, color='#1e3a5f')
+                ax.grid(axis='x', visible=False)
+                ax.spines['top'].set_visible(False)
+                ax.spines['right'].set_visible(False)
+                ax.spines['left'].set_visible(False)
+                ax.spines['bottom'].set_color('#1e3a5f')
+                
+                fig.patch.set_facecolor('#10213a')
+                ax.set_facecolor('#10213a')
+                ax.tick_params(colors='#bae6fd', labelsize=10, length=0)
+                
+                st.pyplot(fig)
+                
+    with tab2:
+        st.markdown("#### Quantitative Evaluation: Precision@5 for Ticket Type Matching")
+        if st.button("Run Random Sample Eval (n=500)"):
+            with st.spinner("Computing Precision@5..."):
+                num_samples = 500
+                test_indices = np.random.choice(len(df), min(num_samples, len(df)), replace=False)
+                precision_scores = []
+                for idx in test_indices:
+                    query_row = df.iloc[idx]
+                    q_text = query_row['Ticket Description']
+                    true_type = query_row['Ticket Type']
+                    results = hybrid_search(q_text, df, tfidf_vectorizer, tfidf_sparse, glove_matrix, embedding_layer, word2idx, UNK_IDX, alpha=0.4, top_k=6)
+                    top_results = results[results['Ticket Description'] != q_text].head(5)
+                    if len(top_results) == 0: continue
+                    matches = (top_results['Ticket Type'] == true_type).sum()
+                    precision_scores.append(matches / len(top_results))
+                
+                avg_precision = np.mean(precision_scores) * 100
+                st.success(f"**Average Precision@5:** {avg_precision:.2f}%")
+                st.progress(avg_precision / 100)
+                
+    with tab3:
+        st.markdown("#### Qualitative Evaluation: Semantic (GloVe) vs Keyword (TF-IDF)")
+        if st.button("Find 5 Examples where GloVe matched Ticket Types better"):
+            with st.spinner("Mining comparative examples..."):
+                found = 0
+                for idx in range(len(df)):
+                    if found >= 5: break
+                    q_text = df.iloc[idx]['Ticket Description']
+                    true_type = df.iloc[idx]['Ticket Type']
+                    
+                    res_tfidf = hybrid_search(q_text, df, tfidf_vectorizer, tfidf_sparse, glove_matrix, embedding_layer, word2idx, UNK_IDX, alpha=1.0, top_k=6)
+                    res_tfidf = res_tfidf[res_tfidf['Ticket Description'] != q_text].head(5)
+                    
+                    res_glove = hybrid_search(q_text, df, tfidf_vectorizer, tfidf_sparse, glove_matrix, embedding_layer, word2idx, UNK_IDX, alpha=0.0, top_k=6)
+                    res_glove = res_glove[res_glove['Ticket Description'] != q_text].head(5)
+                    
+                    if len(res_tfidf) == 0 or len(res_glove) == 0: continue
+                    p5_tfidf = (res_tfidf['Ticket Type'] == true_type).sum() / len(res_tfidf)
+                    p5_glove = (res_glove['Ticket Type'] == true_type).sum() / len(res_glove)
+                    
+                    if p5_glove > p5_tfidf:
+                        found += 1
+                        with st.expander(f"Example {found}: Query Type [{true_type}]", expanded=True):
+                            st.write(f"**Query:** {q_text}")
+                            colA, colB = st.columns(2)
+                            with colA:
+                                st.markdown(f"**GloVe** (Precision: {p5_glove*100:.0f}%)")
+                                st.info(res_glove.iloc[0]['Ticket Description'][:150] + "...")
+                            with colB:
+                                st.markdown(f"**TF-IDF** (Precision: {p5_tfidf*100:.0f}%)")
+                                st.warning(res_tfidf.iloc[0]['Ticket Description'][:150] + "...")
